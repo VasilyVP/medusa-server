@@ -2,23 +2,23 @@ const dotenv = require('dotenv')
 
 let ENV_FILE_NAME = '';
 switch (process.env.NODE_ENV) {
-	case 'production':
-		ENV_FILE_NAME = '.env.production';
-		break;
-	case 'staging':
-		ENV_FILE_NAME = '.env.staging';
-		break;
-	case 'test':
-		ENV_FILE_NAME = '.env.test';
-		break;
-	case 'development':
-	default:
-		ENV_FILE_NAME = '.env';
-		break;
+  case 'production':
+    ENV_FILE_NAME = '.env.production';
+    break;
+  case 'staging':
+    ENV_FILE_NAME = '.env.staging';
+    break;
+  case 'test':
+    ENV_FILE_NAME = '.env.test';
+    break;
+  case 'development':
+  default:
+    ENV_FILE_NAME = '.env';
+    break;
 }
 
 try {
-	dotenv.config({ path: process.cwd() + '/' + ENV_FILE_NAME });
+  dotenv.config({ path: process.cwd() + '/' + ENV_FILE_NAME });
 } catch (e) {
 }
 
@@ -43,15 +43,25 @@ const STRIPE_WEBHOOK_SECRET = process.env.STRIPE_WEBHOOK_SECRET || "";
 const plugins = [
   `medusa-fulfillment-manual`,
   `medusa-payment-manual`,
+  {
+    resolve: `medusa-file-s3`,
+    options: {
+      s3_url: process.env.S3_URL,
+      bucket: process.env.S3_BUCKET,
+      region: process.env.S3_REGION,
+      access_key_id: process.env.S3_ACCESS_KEY_ID,
+      secret_access_key: process.env.S3_SECRET_ACCESS_KEY,
+    },
+  },
   // Uncomment to add Stripe support.
   // You can create a Stripe account via: https://stripe.com
-  // {
-  //   resolve: `medusa-payment-stripe`,
-  //   options: {
-  //     api_key: STRIPE_API_KEY,
-  //     webhook_secret: STRIPE_WEBHOOK_SECRET,
-  //   },
-  // },
+  {
+    resolve: `medusa-payment-stripe`,
+    options: {
+      api_key: STRIPE_API_KEY,
+      webhook_secret: STRIPE_WEBHOOK_SECRET,
+    },
+  },
 ];
 
 module.exports = {
